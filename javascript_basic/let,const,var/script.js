@@ -68,3 +68,12 @@ function func3() {
 
 // console.log(greeting5); // TDZ(Temporal Dead Zone) error
 let greeting5 = 'Hello'
+
+// javascript type: 
+// 1. primative type(Boolean, ..., null, undefined, immutable)
+// 2. reference type(Object, Array, Function, Class)
+
+// primative type (Call Stack Memory, 고정 크기, 실제 데이터 변수에 할당)
+// refrence type (Heap Memory, 다이나믹 크기, Call Stack은 Heap Memory 주소를 할당)
+
+// 3. javascript는 loosely typed, dynamic type type 명시 필요 없음.
