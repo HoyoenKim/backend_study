@@ -11,10 +11,13 @@ const saveMessages = async ({ from, to, message, time }) => {
     }
     messageModel.updateOne({ userToken: token}, {
         $push: { message: data }
-    }, (err, res) => {
-        if(err) console.log(err);
+    })
+    .then((res) => {
         console.log('message created successfully');
     })
+    .catch((err) => {
+        console.log(err);
+    });
 }
 
 module.exports = {
