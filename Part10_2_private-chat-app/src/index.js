@@ -9,7 +9,7 @@ const { Server } = require('socket.io');
 const server = http.createServer(app);
 const io = new Server(server);
 
-const { saveMessages } = require('./utils/messages');
+const { saveMessages, fetchMessages } = require('./utils/messages');
 
 const publicDir = path.join(__dirname, '../public');
 app.use(express.static(publicDir));
@@ -61,19 +61,21 @@ io.on('connection', async socket => {
     });
 
     // 데이터베이스에서 메시지 가져오기
-    socket.on('fetch-messages', (data) => {
-        console.log(data);
+    socket.on('fetch-messages', ({ receiver }) => {
+        fetchMessages(io, socket.id, receiver);
     });
 
     // 유저가 방에서 나갔을 때
     socket.on('disconnect', (data) => {
-        console.log(data);
+        users = users.filter(user => user.userID!== socket.id);
+        io.emit('users-data', { users });
+        io.emit('user-away', socket.id);
     });
 });
 
 
 
-const port = 4000;
+const port = 4001;
 server.listen(port, () => {
     console.log(`Example app listening on port ${port}!`)
 });

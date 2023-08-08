@@ -1,4 +1,4 @@
-const socket = io('http://localhost:4000', {
+const socket = io('http://localhost:4001', {
     autoConnect: false
 });
 
@@ -160,5 +160,40 @@ socket.on('message-to-client', ({ from, message, time }) => {
     }
     else {
         notify.classList.remove('d-none');
+    }
+});
+
+socket.on('user-away', userID => {
+    const to = title.getAttribute('userID');
+    if(to === userID) {
+        title.innerHTML = '&nbsp';
+        msgDiv.classList.add('d-none');
+        messages.classList.add('d-none');
+    }
+})
+
+socket.on('stored-messages', ({messages})=> {
+    if(messages.length > 0) {
+        messages.forEach(msg => {
+            const payload = {
+                message: msg.message,
+                time: msg.time,
+            }
+            if(msg.from === socket.id) {
+                appendMessage({
+                    ...payload,
+                    background: 'bg-success',
+                    position: 'right'
+                });
+            }
+            else {
+                appendMessage({
+                    ...payload,
+                    background: 'bg-secondary',
+                    position: 'left'
+                });
+            }
+            console.log(payload);
+        })
     }
 });

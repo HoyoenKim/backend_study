@@ -10,7 +10,7 @@ const saveMessages = async ({ from, to, message, time }) => {
         from, message, time
     }
     messageModel.updateOne({ userToken: token}, {
-        $push: { message: data }
+        $push: { messages: data }
     })
     .then((res) => {
         console.log('message created successfully');
@@ -20,6 +20,28 @@ const saveMessages = async ({ from, to, message, time }) => {
     });
 }
 
+const fetchMessages = async (io, sender, receiver) => {
+    const token = getToken(sender, receiver);
+    const foundToken = await messageModel.findOne({ userToken: token })
+    if (foundToken) {
+        io.to(sender).emit('stored-messages', { messages: foundToken.messages });
+    } else {
+        const data = {
+            userToken: token,
+            messages: []
+        }
+        const message = new messageModel(data)
+        const savedMessage = message.save();
+        if(savedMessage) {
+            console.log('message created successfully');
+        }
+        else {
+            console.log('error');
+        }
+    }
+}
+
 module.exports = {
-    saveMessages
+    saveMessages,
+    fetchMessages
 }
