@@ -5,3 +5,4 @@ data/
 migrations/
 seeders/
 .env
+public/

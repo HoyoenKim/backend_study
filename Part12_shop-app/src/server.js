@@ -6,7 +6,6 @@ const flash = require('connect-flash');
 const fileUpload = require('express-fileupload');
 
 const express = require('express'); 
-const cookieSession = require('cookie-session');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
@@ -15,6 +14,10 @@ const app = express();
 const port = serverConfig.port;
 
 //middleware
+
+// cookie session (client에 저장)
+/*
+const cookieSession = require('cookie-session');
 const cookieEncryptionKey = process.env.COOKIE_ENCRYPTION_KEY;
 app.use(cookieSession({
     name: 'cookie-session-name',
@@ -35,6 +38,23 @@ app.use(function(request, response, next) {
     }
     next();
 });
+*/
+
+// express session (client에 session identifer 저장, server에 session 저장)
+const session = require('express-session');
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+        httpOnly: true,
+        // https 사용시 true
+        secure: false,
+        //maxAge: 1000 * 60 * 60 * 24 * 7
+    },
+    name: 'shop-app-cookie',
+    resave: false,
+    saveUninitialized: false,
+}));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -70,6 +90,7 @@ app.use((req, res, next) => {
     res.locals.error = req.flash('error');
     res.locals.success = req.flash('success');
     res.locals.currentUser = req.user;
+    res.locals.cart = req.session.cart;
     next();
 });
 

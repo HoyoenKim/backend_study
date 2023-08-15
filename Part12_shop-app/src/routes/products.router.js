@@ -1,9 +1,50 @@
 const express = require('express');
 const router = express.Router();
+const { getAllCategories } = require('../middleware/product');
+const Product = require('../models/products.model');
+const fs = require('fs-extra');
 
-router.get('/', (req, res) => {
-    res.render('products');
-})
+router.get('/', getAllCategories, async (req, res) => {
+    try {
+        const products = await Product.find();
+        res.render('products', {
+            products: products
+        });
+    }
+    catch (err) {
+        console.log(err);
+        next(err);
+    }
+});
 
+router.get('/:category', getAllCategories, async (req, res) => {
+    const categorySlug = req.params.category;
+    try {
+        const products = await Product.find({ category: categorySlug });
+        res.render('products', {
+            products: products
+        });
+    }
+    catch (err) {
+        console.log(err);
+        next(err);
+    }
+});
+
+router.get('/:category/:product', async (req, res) => {
+    try {
+        const product = await Product.findOne({ slug: req.params.product });
+        const galleryDir = 'src/public/product-images/' + product._id + '/gallery';
+        const galleryImages = await fs.readdir(galleryDir);
+        res.render('product', {
+            product: product,
+            galleryImages: galleryImages
+        });
+    }
+    catch (err) {
+        console.log(err);
+        next(err);
+    }
+});
 
 module.exports = router;
