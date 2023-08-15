@@ -1,6 +1,6 @@
 const path = require('path');
 const crypto = require('crypto');
-
+require('dotenv').config();
 const express = require('express');
 const app = express();
 
@@ -15,11 +15,13 @@ const publicDir = path.join(__dirname, '../public');
 app.use(express.static(publicDir));
 app.use(express.json());
 
-
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://hoyeon:1234@express-cluster.rez6pg8.mongodb.net/')
-    .then(() => console.log('connected to database'))
-    .catch((err) => console.log(err));
+const dbUsername = encodeURIComponent(process.env.MONGO_USERNAME);
+const dbPassword = encodeURIComponent(process.env.MONGO_PASSWORD);
+const dbCluster = process.env.MONGO_CLUSTER_NAME;
+mongoose.connect(`mongodb+srv://${dbUsername}:${dbPassword}@${dbCluster}`)
+.then(() => {console.log('Connected to MongoDB');})
+.catch(err => console.log(err));
 
 const randomId = () => crypto.randomBytes(8).toString('hex');
 

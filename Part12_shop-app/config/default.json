@@ -1,7 +1,7 @@
 {
     "server": {
         "host": "localhost",
-        "port": 4002
+        "port": 4003
     },
     "db": {
         "type": "mongodb"
